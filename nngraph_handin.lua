@@ -24,6 +24,8 @@ t3 = torch.Tensor{1,3,5,7,9}
 -- run the tensors through the gModule
 outg = mod:forward({t1,t2,t3})
 
+-- set seed
+torch.manualSeed(123)
 -- generate the same output via regular feed forward modules
 test = nn.Linear(5,5)
 out = torch.add(t1,torch.cmul(t2,test:forward(t3)))
