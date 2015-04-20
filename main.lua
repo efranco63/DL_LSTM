@@ -265,8 +265,6 @@ while epoch < params.max_max_epoch do
    cutorch.synchronize()
    collectgarbage()
  end
- -- save model to file
- torch.save('model.net', model)
 end
 run_test()
 print("Training is over.")
