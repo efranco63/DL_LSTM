@@ -24,6 +24,9 @@ require('nngraph')
 require('base')
 ptb = require('data')
 
+stringx = require('pl.stringx')
+require 'io'
+
 -- Train 1 day and gives 82 perplexity.
 --[[
 local params = {batch_size=20,
@@ -215,6 +218,42 @@ function run_test()
   end
   print("Test set perplexity : " .. g_f3(torch.exp(perp / (len - 1))))
   g_enable_dropout(model.rnns)
+end
+
+function readline()
+  local line = io.read("*line")
+  if line == nil then error({code="EOF"}) end
+  line = stringx.split(line)
+  if tonumber(line[1]) == nil then error({code="init"}) end
+  for i = 2,#line do
+    -- check to see if the word is in the vocabulary
+    if not ptb.vocab_map[line[i]] then error({code="vocab", word = line[i]}) end
+  end
+  return line
+end
+
+function query_sentences()
+  while true do
+    print("Query: len word1 word2 etc")
+    local ok, line = pcall(readline)
+    if not ok then
+      if line.code == "EOF" then
+        break -- end loop
+      elseif line.code == "vocab" then
+        print("Word not in vocabulary: ", line.word)
+      elseif line.code == "init" then
+        print("Start with a number")
+      else
+        print(line)
+        print("Failed, try again")
+      end
+    else
+      for i = 2, #line do 
+        io.write(line[i]..' ') 
+      end
+      io.write('\n')
+    end
+  end
 end
 
 --function main()
