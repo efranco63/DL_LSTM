@@ -128,7 +128,7 @@ function setup()
   model.rnns = g_cloneManyTimes(core_network, params.seq_length)
   model.norm_dw = 0
   model.err = transfer_data(torch.zeros(params.seq_length))
-  model.pred = transfer_data(torch.zeros(params.vocab_size))
+  model.pred = transfer_data(torch.zeros(params.seq_length,params.batch_size,params.vocab_size))
 end
 
 function reset_state(state)
