@@ -39,7 +39,7 @@ while true do
     print("Thanks, I will print now")
     p = 2
     for i = 1, line[1] do 
-      io.write(line[p]) 
+      io.write(line[p]..' ') 
       p = p+1
     end
     io.write('\n')
