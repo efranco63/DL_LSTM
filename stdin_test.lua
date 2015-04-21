@@ -42,8 +42,8 @@ while true do
       io.write(line[p]..' ') 
       p = p+1
     end
-    x = #line
-    io.write('length of line is '..x)
+    x = #line - 1
+    io.write('\nnumber of words is '..x)
     io.write('\n')
   end
 end
