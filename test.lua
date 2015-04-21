@@ -54,7 +54,7 @@ params = {batch_size=20,
           lr=1,
           vocab_size=10000,
           max_epoch=4,
-          max_max_epoch=4,
+          max_max_epoch=2,
           max_grad_norm=5}
 
 function transfer_data(x)
@@ -252,6 +252,11 @@ function query_sentences()
         io.write(line[i]..' ') 
       end
       io.write('\n')
+      -- generate next word in sequence
+      len = line[1]
+      reset_state(state_test)
+      g_disable_dropout(model.rnns)
+      g_replace_table(model.s[0], model.start_s)
     end
   end
 end
