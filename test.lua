@@ -102,7 +102,7 @@ function create_network()
   local pred             = nn.LogSoftMax()(h2y(dropped))
   local err              = nn.ClassNLLCriterion()({pred, y})
   local module           = nn.gModule({x, y, prev_s},
-                                      {err, nn.Identity()(next_s),pred})
+                                      {err, nn.Identity()(next_s)})
   module:getParameters():uniform(-params.init_weight, params.init_weight)
   return transfer_data(module)
 end
@@ -155,7 +155,8 @@ function fp(state)
     local x = state.data[state.pos]
     local y = state.data[state.pos + 1]
     local s = model.s[i - 1]
-    model.err[i], model.s[i], model.pred[i] = unpack(model.rnns[i]:forward({x, y, s}))
+    model.err[i], model.s[i] = unpack(model.rnns[i]:forward({x, y, s}))
+    -- model.err[i], model.s[i], model.pred[i] = unpack(model.rnns[i]:forward({x, y, s}))
     state.pos = state.pos + 1
   end
   g_replace_table(model.start_s, model.s[params.seq_length])
@@ -171,6 +172,7 @@ function bp(state)
     local y = state.data[state.pos + 1]
     local s = model.s[i - 1]
     local derr = transfer_data(torch.ones(1))
+    local dpred = transfer_data(torch.zeros(params.batch_size,params.vocab_size))
     local tmp = model.rnns[i]:backward({x, y, s},
                                        {derr, model.ds})[3]
     g_replace_table(model.ds, tmp)
