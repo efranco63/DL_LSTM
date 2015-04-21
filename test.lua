@@ -102,7 +102,7 @@ function create_network()
   local pred             = nn.LogSoftMax()(h2y(dropped))
   local err              = nn.ClassNLLCriterion()({pred, y})
   local module           = nn.gModule({x, y, prev_s},
-                                      {err, nn.Identity()(next_s)})
+                                      {err, nn.Identity()(next_s),pred})
   module:getParameters():uniform(-params.init_weight, params.init_weight)
   return transfer_data(module)
 end
@@ -128,6 +128,7 @@ function setup()
   model.rnns = g_cloneManyTimes(core_network, params.seq_length)
   model.norm_dw = 0
   model.err = transfer_data(torch.zeros(params.seq_length))
+  model.pred = transfer_data(torch.zeros(params.vocab_size))
 end
 
 function reset_state(state)
@@ -154,7 +155,7 @@ function fp(state)
     local x = state.data[state.pos]
     local y = state.data[state.pos + 1]
     local s = model.s[i - 1]
-    model.err[i], model.s[i] = unpack(model.rnns[i]:forward({x, y, s}))
+    model.err[i], model.s[i], model.pred[i] = unpack(model.rnns[i]:forward({x, y, s}))
     state.pos = state.pos + 1
   end
   g_replace_table(model.start_s, model.s[params.seq_length])
@@ -206,7 +207,7 @@ function run_test()
     local x = state_test.data[i]
     local y = state_test.data[i + 1]
     local s = model.s[i - 1]
-    perp_tmp, model.s[1] = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
+    perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
     perp = perp + perp_tmp[1]
     g_replace_table(model.s[0], model.s[1])
   end
@@ -215,16 +216,16 @@ function run_test()
 end
 
 --function main()
--- g_init_gpu(arg)
--- state_train = {data=transfer_data(ptb.traindataset(params.batch_size))}
--- state_valid =  {data=transfer_data(ptb.validdataset(params.batch_size))}
--- state_test =  {data=transfer_data(ptb.testdataset(params.batch_size))}
--- print("Network parameters:")
--- print(params)
--- local states = {state_train, state_valid, state_test}
--- for _, state in pairs(states) do
---  reset_state(state)
--- end
+g_init_gpu(arg)
+state_train = {data=transfer_data(ptb.traindataset(params.batch_size))}
+state_valid =  {data=transfer_data(ptb.validdataset(params.batch_size))}
+state_test =  {data=transfer_data(ptb.testdataset(params.batch_size))}
+print("Network parameters:")
+print(params)
+local states = {state_train, state_valid, state_test}
+for _, state in pairs(states) do
+ reset_state(state)
+end
 -- setup()
 -- step = 0
 -- epoch = 0
