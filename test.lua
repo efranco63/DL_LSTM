@@ -237,38 +237,41 @@ start_time = torch.tic()
 print("Starting training.")
 words_per_step = params.seq_length * params.batch_size
 epoch_size = torch.floor(state_train.data:size(1) / params.seq_length)
---perps
--- while epoch < params.max_max_epoch do
---  perp = fp(state_train)
---  if perps == nil then
---    perps = torch.zeros(epoch_size):add(perp)
---  end
---  perps[step % epoch_size + 1] = perp
---  step = step + 1
---  bp(state_train)
---  total_cases = total_cases + params.seq_length * params.batch_size
---  epoch = step / epoch_size
---  if step % torch.round(epoch_size / 10) == 10 then
---    wps = torch.floor(total_cases / torch.toc(start_time))
---    since_beginning = g_d(torch.toc(beginning_time) / 60)
---    print('epoch = ' .. g_f3(epoch) ..
---          ', train perp. = ' .. g_f3(torch.exp(perps:mean())) ..
---          ', wps = ' .. wps ..
---          ', dw:norm() = ' .. g_f3(model.norm_dw) ..
---          ', lr = ' ..  g_f3(params.lr) ..
---          ', since beginning = ' .. since_beginning .. ' mins.')
---  end
---  if step % epoch_size == 0 then
---    run_valid()
---    if epoch > params.max_epoch then
---        params.lr = params.lr / params.decay
---    end
---  end
---  if step % 33 == 0 then
---    cutorch.synchronize()
---    collectgarbage()
---  end
--- end
--- run_test()
--- print("Training is over.")
--- --end
+perps
+while epoch < params.max_max_epoch do
+ perp = fp(state_train)
+ if perps == nil then
+   perps = torch.zeros(epoch_size):add(perp)
+ end
+ perps[step % epoch_size + 1] = perp
+ step = step + 1
+ bp(state_train)
+ total_cases = total_cases + params.seq_length * params.batch_size
+ epoch = step / epoch_size
+ if step % torch.round(epoch_size / 10) == 10 then
+   wps = torch.floor(total_cases / torch.toc(start_time))
+   since_beginning = g_d(torch.toc(beginning_time) / 60)
+   print('epoch = ' .. g_f3(epoch) ..
+         ', train perp. = ' .. g_f3(torch.exp(perps:mean())) ..
+         ', wps = ' .. wps ..
+         ', dw:norm() = ' .. g_f3(model.norm_dw) ..
+         ', lr = ' ..  g_f3(params.lr) ..
+         ', since beginning = ' .. since_beginning .. ' mins.')
+ end
+ if step % epoch_size == 0 then
+   run_valid()
+   if epoch > params.max_epoch then
+       params.lr = params.lr / params.decay
+   end
+ end
+ if step % 33 == 0 then
+   cutorch.synchronize()
+   collectgarbage()
+ end
+end
+print("Saving model")
+torch.save('model.net',model)
+print("Testing model")
+run_test()
+print("Training is over.")
+--end
