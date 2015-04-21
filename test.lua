@@ -237,7 +237,7 @@ start_time = torch.tic()
 print("Starting training.")
 words_per_step = params.seq_length * params.batch_size
 epoch_size = torch.floor(state_train.data:size(1) / params.seq_length)
-perps
+-- perps
 while epoch < params.max_max_epoch do
  perp = fp(state_train)
  if perps == nil then
