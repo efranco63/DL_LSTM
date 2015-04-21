@@ -2,6 +2,12 @@ ptb = require('data')
 stringx = require('pl.stringx')
 require 'io'
 
+function transfer_data(x)
+  return x:cuda()
+end
+
+state_train = {data=transfer_data(ptb.traindataset(1))}
+
 function readline()
   local line = io.read("*line")
   if line == nil then error({code="EOF"}) end
