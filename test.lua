@@ -102,7 +102,7 @@ function create_network()
   local pred             = nn.LogSoftMax()(h2y(dropped))
   local err              = nn.ClassNLLCriterion()({pred, y})
   local module           = nn.gModule({x, y, prev_s},
-                                      {err, nn.Identity()(next_s)})
+                                      {err, nn.Identity()(next_s),pred})
   module:getParameters():uniform(-params.init_weight, params.init_weight)
   return transfer_data(module)
 end
@@ -155,8 +155,8 @@ function fp(state)
     local x = state.data[state.pos]
     local y = state.data[state.pos + 1]
     local s = model.s[i - 1]
-    model.err[i], model.s[i] = unpack(model.rnns[i]:forward({x, y, s}))
-    -- model.err[i], model.s[i], model.pred[i] = unpack(model.rnns[i]:forward({x, y, s}))
+    -- model.err[i], model.s[i] = unpack(model.rnns[i]:forward({x, y, s}))
+    model.err[i], model.s[i], model.pred[i] = unpack(model.rnns[i]:forward({x, y, s}))
     state.pos = state.pos + 1
   end
   g_replace_table(model.start_s, model.s[params.seq_length])
@@ -174,7 +174,7 @@ function bp(state)
     local derr = transfer_data(torch.ones(1))
     local dpred = transfer_data(torch.zeros(params.batch_size,params.vocab_size))
     local tmp = model.rnns[i]:backward({x, y, s},
-                                       {derr, model.ds})[3]
+                                       {derr, model.ds, dpred})[3]
     g_replace_table(model.ds, tmp)
     cutorch.synchronize()
   end
@@ -224,20 +224,20 @@ state_valid =  {data=transfer_data(ptb.validdataset(params.batch_size))}
 state_test =  {data=transfer_data(ptb.testdataset(params.batch_size))}
 print("Network parameters:")
 print(params)
-local states = {state_train, state_valid, state_test}
+states = {state_train, state_valid, state_test}
 for _, state in pairs(states) do
  reset_state(state)
 end
--- setup()
--- step = 0
--- epoch = 0
--- total_cases = 0
--- beginning_time = torch.tic()
--- start_time = torch.tic()
--- print("Starting training.")
--- words_per_step = params.seq_length * params.batch_size
--- epoch_size = torch.floor(state_train.data:size(1) / params.seq_length)
--- --perps
+setup()
+step = 0
+epoch = 0
+total_cases = 0
+beginning_time = torch.tic()
+start_time = torch.tic()
+print("Starting training.")
+words_per_step = params.seq_length * params.batch_size
+epoch_size = torch.floor(state_train.data:size(1) / params.seq_length)
+--perps
 -- while epoch < params.max_max_epoch do
 --  perp = fp(state_train)
 --  if perps == nil then
