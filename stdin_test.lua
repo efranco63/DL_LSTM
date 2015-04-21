@@ -1,3 +1,4 @@
+require 'cunn'
 ptb = require('data')
 stringx = require('pl.stringx')
 require 'io'
