@@ -51,7 +51,7 @@ params = {batch_size=20,
           lr=1,
           vocab_size=10000,
           max_epoch=4,
-          max_max_epoch=13,
+          max_max_epoch=4,
           max_grad_norm=5}
 
 function transfer_data(x)
@@ -269,9 +269,6 @@ while epoch < params.max_max_epoch do
    collectgarbage()
  end
 end
-print("Saving model")
-torch.save('model.net',model)
-print("Testing model")
 run_test()
 print("Training is over.")
 --end
