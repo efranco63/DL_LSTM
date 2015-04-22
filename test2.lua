@@ -44,15 +44,15 @@ local params = {batch_size=20,
                ]]--
 
 -- Trains 1h and gives test 115 perplexity.
-params = {batch_size=20,
+params = {batch_size=32,
           seq_length=50,
           layers=2,
           decay=1.15,
           rnn_size=1000,
           dropout=0.65,
-          init_weight=0.1,
-          mom=0.9,
-          lr=0.1,
+          init_weight=0.05,
+          mom=0.99,
+          lr=0.01,
           vocab_size=10000,
           max_epoch=4,
           max_max_epoch=50,
@@ -191,7 +191,7 @@ function bp(state)
   -- apply momentum, with no dampening
   paramdx:mul(params.mom):add(1,paramdx)
   -- nesterov momentum
-  -- paramdx:add(params.mom,paramdx)
+  paramdx:add(params.mom,paramdx)
   -- update gradients
   paramx:add(paramdx:mul(-params.lr))
 end
@@ -331,7 +331,7 @@ while epoch < params.max_max_epoch do
  if step % epoch_size == 0 then
    run_valid()
    print("Saving model")
-   torch.save('lmodel_2.net',model)
+   torch.save('lmodel_3.net',model)
    if epoch > params.max_epoch then
        params.lr = params.lr / params.decay
    end
