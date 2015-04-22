@@ -338,9 +338,9 @@ while epoch < params.max_max_epoch do
    cutorch.synchronize()
    collectgarbage()
  end
+  print("Saving model")
+  torch.save('lmodel_2.net',model)
 end
-print("Saving model")
-torch.save('lmodel.net',model)
 -- run_test()
 print("Training is over.")
 --end
