@@ -55,7 +55,7 @@ params = {batch_size=20,
           lr=0.1,
           vocab_size=10000,
           max_epoch=4,
-          max_max_epoch=13,
+          max_max_epoch=50,
           max_grad_norm=5}
 
 function transfer_data(x)
