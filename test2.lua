@@ -44,14 +44,15 @@ local params = {batch_size=20,
                ]]--
 
 -- Trains 1h and gives test 115 perplexity.
-params = {batch_size=20,
+params = {batch_size=1,
           seq_length=50,
           layers=2,
-          decay=2,
-          rnn_size=200,
-          dropout=0,
+          decay=1.15,
+          rnn_size=1000,
+          dropout=0.65,
           init_weight=0.1,
-          lr=1,
+          mom=0.9,
+          lr=0.1,
           vocab_size=10000,
           max_epoch=4,
           max_max_epoch=13,
@@ -187,6 +188,11 @@ function bp(state)
     local shrink_factor = params.max_grad_norm / model.norm_dw
     paramdx:mul(shrink_factor)
   end
+  -- apply momentum, with no dampening
+  paramdx:mul(params.mom):add(1,paramdx)
+  -- nesterov momentum
+  -- paramdx:add(params.mom,paramdx)
+  -- update gradients
   paramx:add(paramdx:mul(-params.lr))
 end
 
@@ -333,7 +339,8 @@ while epoch < params.max_max_epoch do
    collectgarbage()
  end
 end
+print("Saving model")
+torch.save('lmodel.net',model)
 -- run_test()
 print("Training is over.")
-query_sentences()
 --end
