@@ -44,17 +44,18 @@ local params = {batch_size=20,
                ]]--
 
 -- Trains 1h and gives test 115 perplexity.
-params = {batch_size=20,
-          seq_length=20,
-          layers=2,
-          decay=2,
-          rnn_size=200,
-          dropout=0,
-          init_weight=0.1,
-          lr=1,
-          vocab_size=10000,
+params = {batch_size=32,
+          seq_length=35,
+          layers=3,
+          decay=1.15,
+          rnn_size=1500,
+          dropout=0.65,
+          init_weight=0.05,
+          mom=0.9,
+          lr=0.01,
+          vocab_size=50,
           max_epoch=4,
-          max_max_epoch=13,
+          max_max_epoch=50,
           max_grad_norm=5}
 
 function transfer_data(x)
@@ -187,6 +188,11 @@ function bp(state)
     local shrink_factor = params.max_grad_norm / model.norm_dw
     paramdx:mul(shrink_factor)
   end
+  -- apply momentum, with no dampening
+  paramdx:mul(params.mom):add(1,paramdx)
+  -- nesterov momentum
+  paramdx:add(params.mom,paramdx)
+  -- update gradients
   paramx:add(paramdx:mul(-params.lr))
 end
 
@@ -198,7 +204,7 @@ function run_valid()
   for i = 1, len do
     perp = perp + fp(state_valid)
   end
-  print("Validation set perplexity : " .. g_f3(torch.exp(perp / len)))
+  print("Validation set perplexity : " .. g_f3(torch.exp(5.6 * perp / len)))
   g_enable_dropout(model.rnns)
 end
 
@@ -285,10 +291,10 @@ end
 g_init_gpu(arg)
 state_train = {data=transfer_data(ptb.traindataset(params.batch_size))}
 state_valid =  {data=transfer_data(ptb.validdataset(params.batch_size))}
-state_test =  {data=transfer_data(ptb.testdataset(params.batch_size))}
+-- state_test =  {data=transfer_data(ptb.testdataset(params.batch_size))}
 print("Network parameters:")
 print(params)
-states = {state_train, state_valid, state_test}
+states = {state_train, state_valid}
 for _, state in pairs(states) do
  reset_state(state)
 end
@@ -316,7 +322,7 @@ while epoch < params.max_max_epoch do
    wps = torch.floor(total_cases / torch.toc(start_time))
    since_beginning = g_d(torch.toc(beginning_time) / 60)
    print('epoch = ' .. g_f3(epoch) ..
-         ', train perp. = ' .. g_f3(torch.exp(perps:mean())) ..
+         ', train perp. = ' .. g_f3(torch.exp(5.6 * perps:mean())) ..
          ', wps = ' .. wps ..
          ', dw:norm() = ' .. g_f3(model.norm_dw) ..
          ', lr = ' ..  g_f3(params.lr) ..
@@ -324,6 +330,8 @@ while epoch < params.max_max_epoch do
  end
  if step % epoch_size == 0 then
    run_valid()
+   print("Saving model")
+   torch.save('lmodel_5.net',model)
    if epoch > params.max_epoch then
        params.lr = params.lr / params.decay
    end
@@ -333,7 +341,6 @@ while epoch < params.max_max_epoch do
    collectgarbage()
  end
 end
-run_test()
+-- run_test()
 print("Training is over.")
-query_sentences()
 --end
