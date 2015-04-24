@@ -11,12 +11,12 @@ local file = require('pl.file')
 
 local ptb_path = "./data/"
 
-local trainfn = ptb_path .. "ptb.train.txt"
-local testfn  = ptb_path .. "ptb.test.txt"
-local validfn = ptb_path .. "ptb.valid.txt"
+-- local trainfn = ptb_path .. "ptb.train.txt"
+-- local testfn  = ptb_path .. "ptb.test.txt"
+-- local validfn = ptb_path .. "ptb.valid.txt"
 
--- local trainfn = ptb_path .. "ptb.char.train.txt"
--- local validfn = ptb_path .. "ptb.char.valid.txt"
+local trainfn = ptb_path .. "ptb.char.train.txt"
+local validfn = ptb_path .. "ptb.char.valid.txt"
 
 
 local vocab_idx = 0
@@ -61,13 +61,13 @@ end
 
 -- Intentionally we repeat dimensions without offseting.
 -- Pass over this batch corresponds to the fully sequential processing.
-local function testdataset(batch_size)
-   if testfn then
-      local x = load_data(testfn)
-      x = x:resize(x:size(1), 1):expand(x:size(1), batch_size)
-      return x
-   end
-end
+-- local function testdataset(batch_size)
+--    if testfn then
+--       local x = load_data(testfn)
+--       x = x:resize(x:size(1), 1):expand(x:size(1), batch_size)
+--       return x
+--    end
+-- end
 
 local function validdataset(batch_size)
    local x = load_data(validfn)
