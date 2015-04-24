@@ -56,6 +56,7 @@ end
 
 function readline()
   local line = io.read("*line")
+  if line == nil then error({code="EOF"}) end
   line = stringx.split(line)
   for i = 2,#line do
     -- check to see if the character is in the vocabulary
@@ -88,13 +89,15 @@ function main()
     if not ok then
       if line.code == "vocab" then
         print("Character not in vocabulary: ", line.word)
+      elseif line.code == "EOF" then
+        flag = 1
       else
         print(line)
         print("Failed, try again")
       end
     else
       -- if a space or blank is entered, an underscore is returned
-      if line == nil or line[1] == ' ' then
+      if flag == 1 then
         predictor = '_'
       else
         predictor = line[1]
