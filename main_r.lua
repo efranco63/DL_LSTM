@@ -59,6 +59,7 @@ function readline()
   if line == nil then error({code="EOF"}) end
   line = stringx.split(line)
   for i = 2,#line do
+    print (line[i])
     -- check to see if the character is in the vocabulary
     if not vocab_map[line[i]] then 
         print (line[i])
