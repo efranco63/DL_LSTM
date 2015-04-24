@@ -93,21 +93,18 @@ function main()
       end
     else
       predictor = line[1]
-      -- generate next character in sequence
-      for i = 1,len do
-        -- get the index in the vocab map of the character
-        idx = vocab_map[predictor]
-        for i=1,params.batch_size do x[i] = idx end
-        local s = model.s[i - 1]
-        perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
-        xx = pred_tmp[1]:clone():float()
-        for i=1,#xx do
-            io.write(inverse_vocab_map[xx[i]]..' ')
-            io.flush()
-        end
-        -- replace initial state for next iteration with state just generated
-        g_replace_table(model.s[0], model.s[1])
+      -- get the index in the vocab map of the character
+      idx = vocab_map[predictor]
+      for i=1,params.batch_size do x[i] = idx end
+      local s = model.s[i - 1]
+      perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
+      xx = pred_tmp[1]:clone():float()
+      for i=1,#xx do
+          io.write(inverse_vocab_map[xx[i]]..' ')
+          io.flush()
       end
+    -- replace initial state for next iteration with state just generated
+    g_replace_table(model.s[0], model.s[1])
       io.write('\n')
       io.flush()
     end
