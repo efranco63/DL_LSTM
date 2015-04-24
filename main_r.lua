@@ -104,12 +104,9 @@ function main()
         for i=1,params.batch_size do x[i] = idx end
         local s = model.s[i - 1]
         perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
-        -- get the predicted word and print it
-        -- _, argmax = pred_tmp[1]:max(1)
-        -- io.write(inverse_vocab_map[argmax[1]]..' ') 
         xx = pred_tmp[1]:clone():float()
-        xx = torch.multinomial(torch.exp(xx),1)
-        io.write(inverse_vocab_map[xx[1]]..' ')
+        for i in #xx:
+            io.write(xx[i]..' ')
         io.flush()
         -- replace initial state for next iteration with state just generated
         g_replace_table(model.s[0], model.s[1])
