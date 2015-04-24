@@ -89,8 +89,7 @@ function main()
     if not ok then
       if line.code == "vocab" then
         print("Character not in vocabulary: ", line.word)
-      -- elseif line.code == "EOF" then
-      --   return true
+        break
       else
         print(line)
         print("Failed, try again")
@@ -112,8 +111,8 @@ function main()
           io.write(g_f3(xx[i])..' ')
           io.flush()
       end
-    -- replace initial state for next iteration with state just generated
-    g_replace_table(model.s[0], model.s[1])
+      -- replace initial state for next iteration with state just generated
+      g_replace_table(model.s[0], model.s[1])
       io.write('\n')
       io.flush()
     end
