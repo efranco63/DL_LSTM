@@ -44,18 +44,17 @@ local params = {batch_size=20,
                ]]--
 
 -- Trains 1h and gives test 115 perplexity.
-params = {batch_size=32,
-          seq_length=35,
-          layers=3,
-          decay=1.15,
-          rnn_size=1500,
-          dropout=0.65,
-          init_weight=0.05,
-          mom=0.9,
-          lr=0.01,
-          vocab_size=50,
+params = {batch_size=20,
+          seq_length=20,
+          layers=2,
+          decay=2,
+          rnn_size=100,
+          dropout=0,
+          init_weight=0.1,
+          lr=1,
+          vocab_size=10000,
           max_epoch=4,
-          max_max_epoch=50,
+          max_max_epoch=13,
           max_grad_norm=5}
 
 function transfer_data(x)
