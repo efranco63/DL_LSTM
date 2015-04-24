@@ -1,22 +1,5 @@
-ok,cunn = pcall(require, 'fbcunn')
-if not ok then
-    ok,cunn = pcall(require,'cunn')
-    if ok then
-        print("warning: fbcunn not found. Falling back to cunn") 
-        LookupTable = nn.LookupTable
-    else
-        print("Could not find cunn or fbcunn. Either is required")
-        os.exit()
-    end
-else
-    deviceParams = cutorch.getDeviceProperties(1)
-    cudaComputeCapability = deviceParams.major + deviceParams.minor/10
-    LookupTable = nn.LookupTable
-end
+require 'cunn';
 require('nngraph')
-require('base')
-ptb = require('data')
-
 stringx = require('pl.stringx')
 require 'io'
 
@@ -40,11 +23,26 @@ function transfer_data(x)
   return x:cuda()
 end
 
--- load pretrained model
-model = torch.load('lmodel_4.net')
+function g_disable_dropout(node)
+  if type(node) == "table" and node.__typename == nil then
+    for i = 1, #node do
+      node[i]:apply(g_disable_dropout)
+    end
+    return
+  end
+  if string.match(node.__typename, "Dropout") then
+    node.train = false
+  end
+end
 
-function reset_state(state)
-  state.pos = 1
+function g_replace_table(to, from)
+  assert(#to == #from)
+  for i = 1, #to do
+    to[i]:copy(from[i])
+  end
+end
+
+function reset_state()
   if model ~= nil and model.start_s ~= nil then
     for d = 1, 2 * params.layers do
       model.start_s[d]:zero()
@@ -52,35 +50,33 @@ function reset_state(state)
   end
 end
 
-function reset_ds()
-  for d = 1, #model.ds do
-    model.ds[d]:zero()
-  end
-end
-
 function readline()
   local line = io.read("*line")
   if line == nil then error({code="EOF"}) end
   line = stringx.split(line)
-  if tonumber(line[1]) == nil then error({code="init"}) end
   for i = 2,#line do
-    -- check to see if the word is in the vocabulary
+    -- check to see if the character is in the vocabulary
     if not ptb.vocab_map[line[i]] then error({code="vocab", word = line[i]}) end
   end
   return line
 end
 
+-- load pretrained model
+model = torch.load('lmodel_4.net')
+
+-- load vocab map
+file = torch.DiskFile('vocab_map.asc', 'r')
+vocab_map = file:readObject()
+
 function main()
   while true do
-    print("Query: len word1 word2 etc")
+    print("OK GO")
     local ok, line = pcall(readline)
     if not ok then
       if line.code == "EOF" then
         break -- end loop
       elseif line.code == "vocab" then
-        print("Word not in vocabulary: ", line.word)
-      elseif line.code == "init" then
-        print("Start with a number")
+        print("Character not in vocabulary: ", line.word)
       else
         print(line)
         print("Failed, try again")
