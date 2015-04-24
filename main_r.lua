@@ -99,7 +99,7 @@ function main()
       local s = model.s[0]
       perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
       xx = pred_tmp[1]:clone():float()
-      for i=1,#xx do
+      for i=1,xx:size(1) do
           io.write(inverse_vocab_map[xx[i]]..' ')
           io.flush()
       end
