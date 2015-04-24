@@ -56,7 +56,7 @@ function readline()
   line = stringx.split(line)
   for i = 2,#line do
     -- check to see if the character is in the vocabulary
-    if not ptb.vocab_map[line[i]] then error({code="vocab", word = line[i]}) end
+    if not vocab_map[line[i]] then error({code="vocab", word = line[i]}) end
   end
   return line
 end
@@ -72,7 +72,7 @@ inverse_vocab_map = file:readObject()
 
 function main()
   while true do
-    io.write("OK GO")
+    io.write("OK GO\n")
     io.flush()
     local ok, line = pcall(readline)
     if not ok then
