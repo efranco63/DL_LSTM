@@ -188,9 +188,9 @@ function bp(state)
     paramdx:mul(shrink_factor)
   end
   -- apply momentum, with no dampening
-  paramdx:mul(params.mom):add(1,paramdx)
+  -- paramdx:mul(params.mom):add(1,paramdx)
   -- nesterov momentum
-  paramdx:add(params.mom,paramdx)
+  -- paramdx:add(params.mom,paramdx)
   -- update gradients
   paramx:add(paramdx:mul(-params.lr))
 end
