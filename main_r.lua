@@ -92,18 +92,7 @@ function main()
       -- doesnt matter what y is
       local y = transfer_data(torch.ones(params.batch_size))
       -- first loop adding the entered words into memory
-      for i = 2, #line do 
-        -- word that will be used to predict the next
-        predictor = line[i]
-        local idx = ptb.vocab_map[predictor]
-        -- fill all the samples with the same word
-        for i=1,params.batch_size do x[i] = idx end
-        local s = model.s[i - 1]
-        perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
-        -- replace initial state for next iteration with state just generated
-        g_replace_table(model.s[0], model.s[1])
-        io.write(line[i]..' ') 
-      end
+      io.write(line[i]..' ') 
       -- generate next word in sequence
       for i = 1,len do
         -- get the index in the vocab map of the word
