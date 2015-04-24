@@ -353,4 +353,5 @@ while epoch < params.max_max_epoch do
 end
 -- run_test()
 print("Training is over.")
+query_sentences()
 --end
