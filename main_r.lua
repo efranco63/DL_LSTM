@@ -96,7 +96,7 @@ function main()
       -- get the index in the vocab map of the character
       idx = vocab_map[predictor]
       for i=1,params.batch_size do x[i] = idx end
-      local s = model.s[i - 1]
+      local s = model.s[0]
       perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
       xx = pred_tmp[1]:clone():float()
       for i=1,#xx do
