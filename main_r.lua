@@ -59,10 +59,8 @@ function readline()
   if line == nil then error({code="EOF"}) end
   line = stringx.split(line)
   for i = 2,#line do
-    print (line[i])
     -- check to see if the character is in the vocabulary
     if not vocab_map[line[i]] then 
-        print (line[i])
         error({code="vocab", word = line[i]}) 
     end
   end
@@ -75,8 +73,6 @@ model = torch.load('lmodel_4.net')
 -- load vocab map and inverse vocab map
 file = torch.DiskFile('vocab_map.asc', 'r')
 vocab_map = file:readObject()
-file = torch.DiskFile('inverse_vocab_map.asc', 'r')
-inverse_vocab_map = file:readObject()
 
 function main()
   reset_state()
@@ -99,7 +95,7 @@ function main()
         print("Failed, try again")
       end
     else
-      -- if a space or blank is entered, an underscore is returned
+      -- if a space or blank is entered, an underscore is returned as predicting character
       if next(line) == nil then
         predictor = '_'
       else
@@ -107,10 +103,13 @@ function main()
       end
       -- get the index in the vocab map of the character
       idx = vocab_map[predictor]
+      -- fill x with the same character
       for i=1,params.batch_size do x[i] = idx end
       local s = model.s[0]
       perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
+      -- move back to CPU
       xx = pred_tmp[1]:clone():float()
+      -- print out every log probability in pred tensor
       for i=1,xx:size(1) do
           io.write(g_f3(xx[i])..' ')
           io.flush()
@@ -123,4 +122,4 @@ function main()
   end
 end
 
--- main()
+main()
