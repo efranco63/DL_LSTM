@@ -113,7 +113,7 @@ function main()
         io.flush()
         -- replace initial state for next iteration with state just generated
         g_replace_table(model.s[0], model.s[1])
-        predictor = inverse_vocab_map[xx[1]]
+        predictor = inverse_vocab_map[argmax[1]]
       end
       io.write('\n')
       io.flush()
