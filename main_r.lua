@@ -64,13 +64,16 @@ end
 -- load pretrained model
 model = torch.load('lmodel_4.net')
 
--- load vocab map
+-- load vocab map and inverse vocab map
 file = torch.DiskFile('vocab_map.asc', 'r')
 vocab_map = file:readObject()
+file = torch.DiskFile('inverse_vocab_map.asc', 'r')
+inverse_vocab_map = file:readObject()
 
 function main()
   while true do
-    print("OK GO")
+    io.write("OK GO")
+    io.flush()
     local ok, line = pcall(readline)
     if not ok then
       if line.code == "EOF" then
@@ -92,11 +95,12 @@ function main()
       -- doesnt matter what y is
       local y = transfer_data(torch.ones(params.batch_size))
       -- first loop adding the entered words into memory
-      io.write(line[i]..' ') 
+      io.write(line[i]..' ')
+      io.flush() 
       -- generate next word in sequence
       for i = 1,len do
         -- get the index in the vocab map of the word
-        idx = ptb.vocab_map[predictor]
+        idx = vocab_map[predictor]
         for i=1,params.batch_size do x[i] = idx end
         local s = model.s[i - 1]
         perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
@@ -105,12 +109,14 @@ function main()
         -- io.write(ptb.inverse_vocab_map[argmax[1]]..' ') 
         xx = pred_tmp[1]:clone():float()
         xx = torch.multinomial(torch.exp(xx),1)
-        io.write(ptb.inverse_vocab_map[xx[1]]..' ')
+        io.write(inverse_vocab_map[xx[1]]..' ')
+        io.flush()
         -- replace initial state for next iteration with state just generated
         g_replace_table(model.s[0], model.s[1])
-        predictor = ptb.inverse_vocab_map[xx[1]]
+        predictor = inverse_vocab_map[xx[1]]
       end
       io.write('\n')
+      io.flush()
     end
   end
 end
