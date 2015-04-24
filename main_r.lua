@@ -86,6 +86,7 @@ function main()
   io.flush()
   while true do
     local ok, line = pcall(readline)
+    print(line)
     if not ok then
       if line.code == "vocab" then
         print("Character not in vocabulary: ", line.word)
