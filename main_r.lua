@@ -56,7 +56,6 @@ end
 
 function readline()
   local line = io.read("*line")
-  if line == nil then error({code="EOF"}) end
   line = stringx.split(line)
   for i = 2,#line do
     -- check to see if the character is in the vocabulary
@@ -87,16 +86,19 @@ function main()
   while true do
     local ok, line = pcall(readline)
     if not ok then
-      if line.code == "EOF" then
-        break -- end loop
-      elseif line.code == "vocab" then
+      if line.code == "vocab" then
         print("Character not in vocabulary: ", line.word)
       else
         print(line)
         print("Failed, try again")
       end
     else
-      predictor = line[1]
+      -- if a space or blank is entered, an underscore is returned
+      if line == nil or line[1] == ' ' then
+        predictor = '_'
+      else
+        predictor = line[1]
+      end
       -- get the index in the vocab map of the character
       idx = vocab_map[predictor]
       for i=1,params.batch_size do x[i] = idx end
