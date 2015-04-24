@@ -84,7 +84,7 @@ function main()
     local ok, line = pcall(readline)
     if not ok then
       if line.code == "EOF" then
-        return -- end loop
+        break -- end loop
       elseif line.code == "vocab" then
         print("Character not in vocabulary: ", line.word)
       else
