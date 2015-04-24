@@ -60,7 +60,10 @@ function readline()
   line = stringx.split(line)
   for i = 2,#line do
     -- check to see if the character is in the vocabulary
-    if not vocab_map[line[i]] then error({code="vocab", word = line[i]}) end
+    if not vocab_map[line[i]] then 
+        print (line[i])
+        error({code="vocab", word = line[i]}) 
+    end
   end
   return line
 end
