@@ -45,8 +45,8 @@ local params = {batch_size=20,
 
 -- Trains 1h and gives test 115 perplexity.
 params = {batch_size=32,
-          seq_length=35,
-          layers=2,
+          seq_length=50,
+          layers=3,
           decay=1.15,
           rnn_size=1000,
           dropout=0.65,
@@ -331,7 +331,7 @@ while epoch < params.max_max_epoch do
  if step % epoch_size == 0 then
    run_valid()
    print("Saving model")
-   torch.save('lmodel_4.net',model)
+   torch.save('lmodel_6.net',model)
    if epoch > params.max_epoch then
        params.lr = params.lr / params.decay
    end
