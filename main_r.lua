@@ -95,7 +95,7 @@ function main()
       -- doesnt matter what y is
       local y = transfer_data(torch.ones(params.batch_size))
       -- first loop adding the entered words into memory
-      io.write(line[i]..' ')
+      io.write(line[1]..' ')
       io.flush() 
       -- generate next word in sequence
       for i = 1,len do
