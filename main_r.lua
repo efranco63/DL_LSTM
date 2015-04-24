@@ -94,8 +94,8 @@ function main()
       local x = transfer_data(torch.zeros(params.batch_size))
       -- doesnt matter what y is
       local y = transfer_data(torch.ones(params.batch_size))
-      -- first loop adding the entered words into memory
-      io.write(line[1]..' ')
+      predictor = line[2]
+      io.write(line[2]..' ')
       io.flush() 
       -- generate next word in sequence
       for i = 1,len do
