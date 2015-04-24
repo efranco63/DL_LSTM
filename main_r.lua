@@ -86,19 +86,18 @@ function main()
   io.flush()
   while true do
     local ok, line = pcall(readline)
-    print(line)
     if not ok then
       if line.code == "vocab" then
         print("Character not in vocabulary: ", line.word)
-      elseif line.code == "EOF" then
-        flag = 1
+      -- elseif line.code == "EOF" then
+      --   return true
       else
         print(line)
         print("Failed, try again")
       end
     else
       -- if a space or blank is entered, an underscore is returned
-      if flag == 1 then
+      if next(line) == nil then
         predictor = '_'
       else
         predictor = line[1]
