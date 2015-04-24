@@ -100,7 +100,7 @@ function main()
       perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
       xx = pred_tmp[1]:clone():float()
       for i=1,xx:size(1) do
-          io.write(inverse_vocab_map[xx[i]]..' ')
+          io.write(xx[i]..' ')
           io.flush()
       end
     -- replace initial state for next iteration with state just generated
