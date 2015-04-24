@@ -35,10 +35,6 @@ function g_disable_dropout(node)
   end
 end
 
-function g_f3(f)
-  return string.format("%.3f", f)
-end
-
 function g_replace_table(to, from)
   assert(#to == #from)
   for i = 1, #to do
@@ -111,7 +107,7 @@ function main()
       xx = pred_tmp[1]:clone():float()
       -- print out every log probability in pred tensor
       for i=1,xx:size(1) do
-          io.write(g_f3(xx[i])..' ')
+          io.write(xx[i]..' ')
           io.flush()
       end
       -- replace initial state for next iteration with state just generated
