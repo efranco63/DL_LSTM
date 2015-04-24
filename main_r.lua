@@ -77,7 +77,7 @@ function main()
     local ok, line = pcall(readline)
     if not ok then
       if line.code == "EOF" then
-        break -- end loop
+        return -- end loop
       elseif line.code == "vocab" then
         print("Character not in vocabulary: ", line.word)
       else
@@ -105,15 +105,15 @@ function main()
         local s = model.s[i - 1]
         perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
         -- get the predicted word and print it
-        _, argmax = pred_tmp[1]:max(1)
-        io.write(inverse_vocab_map[argmax[1]]..' ') 
-        -- xx = pred_tmp[1]:clone():float()
-        -- xx = torch.multinomial(torch.exp(xx),1)
-        -- io.write(inverse_vocab_map[xx[1]]..' ')
+        -- _, argmax = pred_tmp[1]:max(1)
+        -- io.write(inverse_vocab_map[argmax[1]]..' ') 
+        xx = pred_tmp[1]:clone():float()
+        xx = torch.multinomial(torch.exp(xx),1)
+        io.write(inverse_vocab_map[xx[1]]..' ')
         io.flush()
         -- replace initial state for next iteration with state just generated
         g_replace_table(model.s[0], model.s[1])
-        predictor = inverse_vocab_map[argmax[1]]
+        predictor = inverse_vocab_map[xx[1]]
       end
       io.write('\n')
       io.flush()
