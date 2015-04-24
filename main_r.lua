@@ -106,7 +106,7 @@ function main()
         perp_tmp, model.s[1], pred_tmp = unpack(model.rnns[1]:forward({x, y, model.s[0]}))
         -- get the predicted word and print it
         _, argmax = pred_tmp[1]:max(1)
-        io.write(ptb.inverse_vocab_map[argmax[1]]..' ') 
+        io.write(inverse_vocab_map[argmax[1]]..' ') 
         -- xx = pred_tmp[1]:clone():float()
         -- xx = torch.multinomial(torch.exp(xx),1)
         -- io.write(inverse_vocab_map[xx[1]]..' ')
